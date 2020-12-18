@@ -39,13 +39,17 @@ def publica_topico(event, context):
     msgs = sqsDest.getMessage(10)
 
     for msg in msgs['Messages']:
+    # for msg in msgs:
+        # message_content = json.loads(msg)
         #response = sns.publish(
         #opicArn='arn:aws:sns:us-east-1:559972492049:sns-topic-dev',    
         #Message=str(msg['Body']),
-        print(str(msg['Body']))
+        # print(str(msg['Body']))
         publish_message_to_sns(str(msg['Body']))
+        # publish_message_to_sns(str(message_content['TopicArn']),str(message_content['Message']))
     #print(response)
 
+# def publish_message_to_sns(topicArn: str ,message: str):
 def publish_message_to_sns(message: str):
     # print(str(message))
     # topic_arn = 'arn:aws:sns:us-east-1:559972492049:sns-topic-dev'
@@ -65,11 +69,17 @@ def publish_message_to_sns(message: str):
     # return message_id
     # Create an SNS client
     sns = boto3.client('sns')
+    # session = boto3.session.Session()
+    # client = session.client('sns', 'us-east-1')
+    # topicArn = client.list_topics()['Topics'][0]['TopicArn']
+    
+    # print("Topico : " + str(topicArn))
 
     # Publish a simple message to the specified SNS topic
     response = sns.publish(
+        # TopicArn=str(topicArn),
+        # TopicArn='arn:aws:sns:us-east-1:559972492049:Meutopicu',
         TopicArn='arn:aws:sns:us-east-1:559972492049:sns-topic-dev',
-        #TopicArn='arn:aws:sns:us-east-1:559972492049:Meutopicu',
         Message=str(message),    
     )
 

@@ -3,9 +3,6 @@ service: trab-valteir-rafael
 
 custom:
   stage: ${opt:stage, self:provider.stage}
-  chalala:
-    sqs_url_c: "https://sqs.us-east-1.amazonaws.com/559972492049/terraform-fila-principal"
-    sqs_url_dest_c: "https://sqs.us-east-1.amazonaws.com/559972492049/terraform-fila-secundaria"
     
 provider:
   name: aws
@@ -33,8 +30,8 @@ provider:
         - "arn:aws:sqs:us-east-1:*:terraform-fila-*"
         - "arn:aws:sns:us-east-1:*:sns-topic-*"
   environment: 
-      sqs_url: ${self:custom.chalala.sqs_url_c.${self.custom.stage}}
-      sqs_url_dest: ${self:custom.chalala.sqs_url_dest_c.${self.custom.stage}}
+      sqs_url: "https://sqs.us-east-1.amazonaws.com/559972492049/terraform-fila-principal-${self:custom.stage}"
+      sqs_url_dest: "https://sqs.us-east-1.amazonaws.com/559972492049/terraform-fila-secundaria-${self:custom.stage}"
 package:
   exclude:
     - layer/**
@@ -57,3 +54,27 @@ functions:
     handler: handler.publica_topico
     layers:
       - {Ref: LayerDependeciesLambdaLayer}
+      
+      
+# LambdaExecutionRole:
+#     Type: AWS::IAM::Role
+#     Properties:
+#       AssumeRolePolicyDocument:
+#         Version: '2012-10-17'
+#         Statement:
+#         - Effect: Allow
+#           Principal: {Service: [lambda.amazonaws.com]}
+#           Action: ['sts:AssumeRole']
+#       Path: /
+#       ManagedPolicyArns:
+#       - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+#       - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
+#       Policies:
+#       - PolicyName: SNSPolicy
+#         PolicyDocument:
+#           Version: '2012-10-17'
+#           Statement:
+#             - Effect: Allow
+#               Action:
+#               - "SNS:ListTopic" 
+#               Resource: "arn:aws:sns:us-east-1:*:sns-topic-*"
