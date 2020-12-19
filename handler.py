@@ -13,15 +13,23 @@ def inseresqs(event, context):
     sqs = SqsHandler(env.get_sqs_url())
     sqsDest = SqsHandler(env.get_sqs_url_dest())
     
-    # mensagem = event['pathParameters']['mensagem']
+    mensagem = event['pathParameters']['mensagem']
     
-    # body = {
-    #     "message": str(mensagem)
-    # }
+    body = {
+         "Messagem alegre : ": str(mensagem)
+    }
     
     #sqs.send(str(mensagem))
-    sqs.send(str("Vai tomate cru"))
-    sqsDest.send(str("Vai tomate cru"))
+    sqs.send(str(body))
+    #sqsDest.send(str("Vai tomate cru"))
+    
+    response = {
+        "statusCode": 200,
+        "body": json.dumps(body)
+    }
+
+    return response
+
 
 def recebe_sqs_principal_imprimir(event, context):
     env = Variables()
