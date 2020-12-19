@@ -69,17 +69,25 @@ def publish_message_to_sns(message: str):
     # return message_id
     # Create an SNS client
     sns = boto3.client('sns')
-    # session = boto3.session.Session()
-    # client = session.client('sns', 'us-east-1')
-    # topicArn = client.list_topics()['Topics'][0]['TopicArn']
+    #session = boto3.session.Session()
+    #print("session : " + str(session))
+    #client = session.client('sns', 'us-east-1')
+    #print("client : " + str(client))
+    #topicArn = client.list_topics()['Topics'][0]['TopicArn'][0]
+    #topicArn = client.list_topics()['Topics']
+    #print("Topico : " + str(topicArn))
     
-    # print("Topico : " + str(topicArn))
+    env = Variables()
+    topicu = env.get_arnvsf()
+    #resp = sns.list_topics()
+    #topics = [topic['TopicArn'] for topic in response['Topics']]
+    print("Topic List: %s" % topicu)
 
     # Publish a simple message to the specified SNS topic
     response = sns.publish(
         # TopicArn=str(topicArn),
         # TopicArn='arn:aws:sns:us-east-1:559972492049:Meutopicu',
-        TopicArn='arn:aws:sns:us-east-1:559972492049:sns-topic-dev',
+        TopicArn=topicu,
         Message=str(message),    
     )
 

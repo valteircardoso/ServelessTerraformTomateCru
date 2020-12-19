@@ -32,6 +32,7 @@ provider:
   environment: 
       sqs_url: "https://sqs.us-east-1.amazonaws.com/559972492049/terraform-fila-principal-${self:custom.stage}"
       sqs_url_dest: "https://sqs.us-east-1.amazonaws.com/559972492049/terraform-fila-secundaria-${self:custom.stage}"
+      arnvsf: "arn:aws:sns:us-east-1:559972492049:sns-topic-${self:custom.stage}"
 package:
   exclude:
     - layer/**
@@ -54,27 +55,3 @@ functions:
     handler: handler.publica_topico
     layers:
       - {Ref: LayerDependeciesLambdaLayer}
-      
-      
-# LambdaExecutionRole:
-#     Type: AWS::IAM::Role
-#     Properties:
-#       AssumeRolePolicyDocument:
-#         Version: '2012-10-17'
-#         Statement:
-#         - Effect: Allow
-#           Principal: {Service: [lambda.amazonaws.com]}
-#           Action: ['sts:AssumeRole']
-#       Path: /
-#       ManagedPolicyArns:
-#       - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-#       - arn:aws:iam::aws:policy/service-role/AWSLambdaRole
-#       Policies:
-#       - PolicyName: SNSPolicy
-#         PolicyDocument:
-#           Version: '2012-10-17'
-#           Statement:
-#             - Effect: Allow
-#               Action:
-#               - "SNS:ListTopic" 
-#               Resource: "arn:aws:sns:us-east-1:*:sns-topic-*"
