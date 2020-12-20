@@ -32,10 +32,7 @@ provider:
   environment: 
       sqs_url: "https://sqs.us-east-1.amazonaws.com/559972492049/terraform-fila-principal-${self:custom.stage}"
       sqs_url_dest: "https://sqs.us-east-1.amazonaws.com/559972492049/terraform-fila-secundaria-${self:custom.stage}"
-      arnvsf: "arn:aws:sns:us-east-1:559972492049:sns-topic-${self:custom.stage}"
-      #sqs_url: "https://sqs.us-east-1.amazonaws.com/*/terraform-fila-principal-${self:custom.stage}"
-      #sqs_url_dest: "https://sqs.us-east-1.amazonaws.com/*/terraform-fila-secundaria-${self:custom.stage}"
-      #arnvsf: "arn:aws:sns:us-east-1:*:sns-topic-${self:custom.stage}"
+      arn_id: "arn:aws:sns:us-east-1:559972492049:sns-topic-${self:custom.stage}"
 package:
   exclude:
     - layer/**

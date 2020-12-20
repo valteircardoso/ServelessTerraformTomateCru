@@ -7,7 +7,6 @@ import os
 
 from sqsHandler import SqsHandler
 from env import Variables
-from TextUtil import *
 
 def inseresqs(event, context):
     env = Variables()
@@ -16,15 +15,10 @@ def inseresqs(event, context):
     
     mensagem = event['pathParameters']['mensagem']
     
-    texto = TextUtil()
-
-    mensagemEdit = texto.removerCaracteresEspeciais(str(mensagem))
-    
-    sqs.send(str(mensagemEdit))
-    sqsDest.send(str(mensagemEdit))
+    sqs.send(str(mensagem))
     
     body = {
-         "Messagem " : str(mensagemEdit)
+         "Messagem " : str(mensagem)
     }
     
     response = {
@@ -37,6 +31,7 @@ def inseresqs(event, context):
 def recebe_sqs_principal_imprimir(event, context):
     env = Variables()
     sqs = SqsHandler(env.get_sqs_url())
+    sqsDest = SqsHandler(env.get_sqs_url_dest())
     
     msgs = sqs.getMessage(10)
     
@@ -49,6 +44,8 @@ def recebe_sqs_principal_imprimir(event, context):
     else:
         for msg in msgs['Messages']:
             resposta = resposta + str(msg['Body']) + ", "
+            sqsDest.send(str(msg['Body']))
+            sqs.deleteMessage(msg['ReceiptHandle'])
 
     body = {
          "Resposta " : str(resposta)
@@ -96,10 +93,9 @@ def publish_message_to_sns(message: str):
     sns = boto3.client('sns')
 
     env = Variables()
-    topicu = env.get_arnvsf()
-    print("Topic List: %s" % topicu)
+    topico = env.get_arn_id()
 
     response = sns.publish(
-        TopicArn=topicu,
+        TopicArn=topico,
         Message=str(message),    
     )
