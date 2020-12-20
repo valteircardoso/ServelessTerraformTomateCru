@@ -60,5 +60,9 @@ functions:
           method : get
   publica_topico:
     handler: handler.publica_topico
+    events:
+      - http:
+          path: parametros/enviarMensagens/
+          method : get
     layers:
       - {Ref: LayerDependeciesLambdaLayer}

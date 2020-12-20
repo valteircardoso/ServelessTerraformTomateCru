@@ -7,6 +7,7 @@ import os
 
 from sqsHandler import SqsHandler
 from env import Variables
+from TextUtil import *
 
 def inseresqs(event, context):
     env = Variables()
@@ -15,12 +16,16 @@ def inseresqs(event, context):
     
     mensagem = event['pathParameters']['mensagem']
     
-    body = {
-         "Messagem alegre : ": str(mensagem)
-    }
+    texto = TextUtil()
+
+    mensagemEdit = texto.removerCaracteresEspeciais(str(mensagem))
     
-    sqs.send(str(body))
-    sqsDest.send(str(body))
+    sqs.send(str(mensagemEdit))
+    sqsDest.send(str(mensagemEdit))
+    
+    body = {
+         "Messagem " : str(mensagemEdit)
+    }
     
     response = {
         "statusCode": 200,
@@ -29,7 +34,6 @@ def inseresqs(event, context):
 
     return response
 
-
 def recebe_sqs_principal_imprimir(event, context):
     env = Variables()
     sqs = SqsHandler(env.get_sqs_url())
@@ -37,16 +41,18 @@ def recebe_sqs_principal_imprimir(event, context):
     msgs = sqs.getMessage(10)
     
     texto = str(msgs)
+    
+    resposta = ""
 
     if texto[2:18] == "ResponseMetadata":
-        body = {
-             "Resposta " : "Nao ha mensagens"
-        }
+        resposta = "Nao ha mensagens"
     else:
         for msg in msgs['Messages']:
-            body = {
-                 "Resposta " : str(msg['Body'])
-            }
+            resposta = resposta + str(msg['Body']) + ", "
+
+    body = {
+         "Resposta " : str(resposta)
+    }
 
     response = {
         "statusCode": 200,
@@ -60,10 +66,31 @@ def publica_topico(event, context):
     sqsDest = SqsHandler(env.get_sqs_url_dest())
     
     msgs = sqsDest.getMessage(10)
+    
+    texto = str(msgs)
+    
+    resposta = ""
+    
+    if texto[2:18] == "ResponseMetadata":
+        resposta = "Nao ha mensagens"
+    else:
+        for msg in msgs['Messages']:
+            resposta = resposta + str(msg['Body'])  + ", "
+    
+    if texto[2:18] != "ResponseMetadata":        
+        publish_message_to_sns(resposta)
+    
+    body = {
+         "Mensagens enviadas " : str(resposta)
+    }
 
-    for msg in msgs['Messages']:
-        publish_message_to_sns(str(msg['Body']))
+    response = {
+        "statusCode": 200,
+        "body": json.dumps(body)
+    }
 
+    return response
+    
 # def publish_message_to_sns(topicArn: str ,message: str):
 def publish_message_to_sns(message: str):
     sns = boto3.client('sns')
@@ -76,4 +103,3 @@ def publish_message_to_sns(message: str):
         TopicArn=topicu,
         Message=str(message),    
     )
-    print(response)
